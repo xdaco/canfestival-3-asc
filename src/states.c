@@ -254,12 +254,12 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
 
   if(offset){
     /* Adjust COB-ID Client->Server (rx) only id already set to default value or id not valid (id==0xFF)*/
-    if((*(UNS32*)d->objdict[offset].pSubindex[1].pObject == 0x600 + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
+    if((*(UNS32*)d->objdict[offset].pSubindex[1].pObject == ((UNS32)0x600) + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
       /* cob_id_client = 0x600 + nodeId; */
       *(UNS32*)d->objdict[offset].pSubindex[1].pObject = 0x600 + nodeId;
     }
     /* Adjust COB-ID Server -> Client (tx) only id already set to default value or id not valid (id==0xFF)*/
-    if((*(UNS32*)d->objdict[offset].pSubindex[2].pObject == 0x580 + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
+    if((*(UNS32*)d->objdict[offset].pSubindex[2].pObject == ((UNS32)0x580) + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
       /* cob_id_server = 0x580 + nodeId; */
       *(UNS32*)d->objdict[offset].pSubindex[2].pObject = 0x580 + nodeId;
     }
@@ -278,9 +278,13 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
     UNS16 offset = d->firstIndex->PDO_RCV;
     UNS16 lastIndex = d->lastIndex->PDO_RCV;
     UNS32 cobID[] = {0x200, 0x300, 0x400, 0x500};
+    UNS32 canID;
+    UNS32 otherBits;
     if( offset ) while( (offset <= lastIndex) && (i < 4)) {
-      if((*(UNS32*)d->objdict[offset].pSubindex[1].pObject == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF))
-	      *(UNS32*)d->objdict[offset].pSubindex[1].pObject = cobID[i] + nodeId;
+      canID = (*(UNS32*)d->objdict[offset].pSubindex[1].pObject) & 0x1fffffff;
+      otherBits = (*(UNS32*)d->objdict[offset].pSubindex[1].pObject) & ~0x1fffffff;
+      if((canID == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF))
+	      *(UNS32*)d->objdict[offset].pSubindex[1].pObject = (cobID[i] + nodeId) | otherBits;
       i ++;
       offset ++;
     }
@@ -291,17 +295,21 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
     UNS16 offset = d->firstIndex->PDO_TRS;
     UNS16 lastIndex = d->lastIndex->PDO_TRS;
     UNS32 cobID[] = {0x180, 0x280, 0x380, 0x480};
+    UNS32 canID;
+    UNS32 otherBits;
     i = 0;
     if( offset ) while ((offset <= lastIndex) && (i < 4)) {
-      if((*(UNS32*)d->objdict[offset].pSubindex[1].pObject == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF))
-	      *(UNS32*)d->objdict[offset].pSubindex[1].pObject = cobID[i] + nodeId;
+      canID = (*(UNS32*)d->objdict[offset].pSubindex[1].pObject) & 0x1fffffff;
+      otherBits = (*(UNS32*)d->objdict[offset].pSubindex[1].pObject) & ~0x1fffffff;
+      if((canID == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF))
+	      *(UNS32*)d->objdict[offset].pSubindex[1].pObject = (cobID[i] + nodeId) | otherBits;
       i ++;
       offset ++;
     }
   }
 
   /* Update EMCY COB-ID if already set to default*/
-  if((*d->error_cobid == *d->bDeviceNodeId + 0x80)||(*d->bDeviceNodeId==0xFF))
+  if((*d->error_cobid == *d->bDeviceNodeId + (UNS32)0x80)||(*d->bDeviceNodeId==0xFF))
     *d->error_cobid = nodeId + 0x80;
 
   /* bDeviceNodeId is defined in the object dictionary. */
