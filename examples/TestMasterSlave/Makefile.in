@@ -35,7 +35,7 @@ PREFIX = SUB_PREFIX
 TARGET = SUB_TARGET
 CAN_DRIVER = SUB_CAN_DRIVER
 TIMERS_DRIVER = SUB_TIMERS_DRIVER
-TESTMASTERSLAVE = "TestMasterSlave"
+TESTMASTERSLAVE = TestMasterSlave
 ENABLE_SHARED = SUB_ENABLE_SHARED
 
 INCLUDES = -I../../include -I../../include/$(TARGET) -I../../include/$(CAN_DRIVER) -I../../include/$(TIMERS_DRIVER)
@@ -49,7 +49,7 @@ OBJS = $(MASTER_OBJS) ../../src/libcanfestival.a ../../drivers/$(TARGET)/libcanf
 endif
 
 ifeq ($(TARGET),win32)
-	TESTMASTERSLAVE = "TestMasterSlave.exe"
+	TESTMASTERSLAVE = TestMasterSlave.exe
 endif
 
 ifeq ($(TIMERS_DRIVER),timers_win32)
