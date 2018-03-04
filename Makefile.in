@@ -21,7 +21,9 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 # 
 
-all: objdictedit canfestival examples
+OUT_DIR = bin
+
+all: directories objdictedit canfestival examples
 
 examples: canfestival driver
 	$(MAKE) -C examples all
@@ -66,3 +68,9 @@ mrproper: clean
 	$(MAKE) -C examples $@
 	$(MAKE) -C objdictgen $@
 
+directories: ${OUT_DIR}
+
+.PHONY: ${OUT_DIR}
+
+${OUT_DIR}:
+	mkdir -p ${OUT_DIR}
