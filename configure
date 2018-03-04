@@ -873,7 +873,8 @@ MAKEFILES=Makefile.in\
 \ drivers/Makefile.in\
 \ objdictgen/Makefile.in\
 \ examples/Makefile.in\
-\ objdictgen/canfestival_config.py.in
+\ objdictgen/canfestival_config.py.in\
+\ drivers/commonDriver.in\
 
 # Drivers dependent Makefiles
 if [ "$SUB_TIMERS_DRIVER" != "" ]; then
@@ -881,7 +882,7 @@ if [ "$SUB_TIMERS_DRIVER" != "" ]; then
 \	drivers/timers_$SUB_TIMERS_DRIVER/Makefile.in
 fi
 
-if [ "$SUB_CAN_DRIVER" != "" ]; then
+if [ "$SUB_CAN_DRIVER" != "" ] && [ -f "drivers/can_$SUB_CAN_DRIVER/Makefile.in" ]; then
 	MAKEFILES=$MAKEFILES\
 \	drivers/can_$SUB_CAN_DRIVER/Makefile.in
 fi

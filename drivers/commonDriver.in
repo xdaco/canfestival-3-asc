@@ -1,7 +1,7 @@
 #! gmake
 
 #
-# Copyright (C) 2006 Laurent Bessard
+# Copyright (C) 2018 Lars Elgvedt Susaas
 # 
 # This file is part of canfestival, a library implementing the canopen
 # stack
@@ -27,18 +27,25 @@ CFLAGS = SUB_OPT_CFLAGS
 PROG_CFLAGS = SUB_PROG_CFLAGS
 PREFIX = SUB_PREFIX
 TARGET = SUB_TARGET
-CAN_DRIVER = SUB_CAN_DRIVER
 TIMERS_DRIVER = SUB_TIMERS_DRIVER
 ENABLE_DLL_DRIVERS=SUB_ENABLE_DLL_DRIVERS
-CAN_DLL_CFLAGS=SUB_CAN_DLL_CFLAGS
-
-INCLUDES = -I../../include -I../../include/$(TARGET) -I../../include/$(CAN_DRIVER)
-
 OBJS = $(CAN_DRIVER).o
+
+TARGET_DIR=../../bin/
+INCLUDES = -I../../include -I../../include/$(TARGET) -I../../include/$(CAN_DRIVER) $(DRIVER_INCLUDE)
+
+# define target specific environment
+ifeq ($(TARGET),unix)
+DLL_TYPE=so
+endif
+
+ifeq ($(OS),win32)
+DLL_TYPE=dll
+endif
 
 ifeq ($(ENABLE_DLL_DRIVERS),1)
 CFLAGS += -fPIC
-DRIVER = libcanfestival_$(CAN_DRIVER).so
+DRIVER = libcanfestival_$(CAN_DRIVER).$(DLL_TYPE)
 else
 DRIVER = $(OBJS)
 endif
@@ -47,22 +54,26 @@ TARGET_SOFILES = $(PREFIX)/lib/$(DRIVER)
 
 all: driver
 
-driver: $(DRIVER)
+driver: $(PRE_COMPILE_TARGETS) $(TARGET_DIR)$(DRIVER)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(PROG_CFLAGS) ${PROGDEFINES} $(INCLUDES) -o $@ -c $<
 
-libcanfestival_$(CAN_DRIVER).so: $(OBJS)
-	$(CC) -shared -Wl,-soname,libcanfestival_$(CAN_DRIVER).so -o $@ $< $(CAN_DLL_CFLAGS)
+$(TARGET_DIR)$(DRIVER): $(OBJS)
+	$(CC) -shared -Wl,-soname,$(DRIVER) $(CAN_DLL_CFLAGS) -o $@ $<
 
-install: libcanfestival_$(CAN_DRIVER).so
+install: $(TARGET_DIR)$(DRIVER)
 	mkdir -p $(PREFIX)/lib/
 	cp $< $(PREFIX)/lib/
-		
+	
 uninstall:
 	rm -f $(TARGET_SOFILES)
 
+ifdef driverCleanup
+clean: driverCleanup
+else
 clean:
-	rm -f $(OBJS) libcanfestival_$(CAN_DRIVER).so
+endif
+	rm -f $(OBJS) $(TARGET_DIR)$(DRIVER)
 
 mrproper: clean

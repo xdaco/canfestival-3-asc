@@ -24,6 +24,9 @@
 TARGET = SUB_TARGET
 CAN_DRIVER = SUB_CAN_DRIVER
 TIMERS_DRIVER = SUB_TIMERS_DRIVER
+DRIVERSDIR =  can_peak_linux can_copcican_linux can_can4linux can_lincan can_socket can_virtual can_vscom
+DRIVERS := $(addsuffix .so,$(DRIVERSDIR))
+DRIVERS := $(addprefix ../../bin/libcanfestival_,$(DRIVERS))
 
 all: driver
 
@@ -67,7 +70,7 @@ ifneq ($(TARGET),none)
 endif
 
 clean:
-
+	$(foreach driverDir,$(DRIVERSDIR),$(MAKE) -C $(driverDir) $@;)
 ifneq ($(TIMERS_DRIVER),timers_)
 	$(MAKE) -C $(TIMERS_DRIVER) $@
 endif
@@ -92,4 +95,7 @@ ifneq ($(TARGET),none)
 	$(MAKE) -C $(TARGET) $@
 endif
 
+allDrivers: $(DRIVERS)
 
+%.so:
+	$(MAKE) -C $(subst ../../bin/libcanfestival_,,$(basename $@))
