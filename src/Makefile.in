@@ -39,6 +39,7 @@ CAN_DRIVER = SUB_CAN_DRIVER
 TIMERS_DRIVER = SUB_TIMERS_DRIVER
 ENABLE_LSS = SUB_ENABLE_LSS
 ENABLE_SHARED = SUB_ENABLE_SHARED
+TARGET_DIR =../bin/
 
 INCLUDES = -I../include -I../include/$(TARGET) -I../include/$(TIMERS_DRIVER) -I../drivers/$(TARGET)
 
@@ -114,23 +115,23 @@ else
 CFLAGS = SUB_OPT_CFLAGS
 
 ifeq ($(TARGET),none)
-canfestival: libcanfestival.o
+canfestival: $(TARGET_DIR)libcanfestival.o
 else
 ifeq ($(ENABLE_SHARED),1)
-canfestival: libcanfestival.so
+canfestival: $(TARGET_DIR)libcanfestival.so
 else
-canfestival: libcanfestival.a
+canfestival: $(TARGET_DIR)libcanfestival.a
 endif
 endif
 
-libcanfestival.so: $(OBJS)
+$(TARGET_DIR)libcanfestival.so: $(OBJS)
 	@echo " "
 	@echo "*********************************************"
 	@echo "**Building [libcanfestival.so]"
 	@echo "*********************************************"
 	$(CC) -shared -Wl,-soname,$@ -o $@  $(OBJS)
 
-libcanfestival.a: $(OBJS)
+$(TARGET_DIR)libcanfestival.a: $(OBJS)
 	@echo " "
 	@echo "*********************************************"
 	@echo "**Building [libcanfestival.a]"
@@ -138,7 +139,7 @@ libcanfestival.a: $(OBJS)
 	$(BINUTILS_PREFIX)ar rc $@ $(OBJS)
 	$(BINUTILS_PREFIX)ranlib $@
 
-libcanfestival.o: $(OBJS)
+$(TARGET_DIR)libcanfestival.o: $(OBJS)
 	@echo " "
 	@echo "*********************************************"
 	@echo "**Prelink [libcanfestival.o]"
@@ -153,17 +154,17 @@ $(TARGET)_%.o: %.c
 	$(CC) $(CFLAGS) $(PROG_CFLAGS) ${PROGDEFINES} $(INCLUDES) -o $@ -c $<
 
 ifeq ($(ENABLE_SHARED),1)
-install: libcanfestival.so
+install: $(TARGET_DIR)libcanfestival.so
 	mkdir -p $(PREFIX)/lib/
 	mkdir -p $(PREFIX)/include/canfestival
-	cp libcanfestival.so $(PREFIX)/lib/
+	cp $< $(PREFIX)/lib/
 	cp canfestival.pc $(PREFIX)/lib/pkgconfig
 	cp ../include/*.h $(PREFIX)/include/canfestival
 else
-install: libcanfestival.a
+install: $(TARGET_DIR)libcanfestival.a
 	mkdir -p $(PREFIX)/lib/
 	mkdir -p $(PREFIX)/include/canfestival
-	cp libcanfestival.a $(PREFIX)/lib/
+	cp $< $(PREFIX)/lib/
 	cp canfestival.pc $(PREFIX)/lib/pkgconfig
 	cp ../include/*.h $(PREFIX)/include/canfestival
 endif
