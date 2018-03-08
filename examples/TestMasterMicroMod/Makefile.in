@@ -35,20 +35,21 @@ PREFIX = SUB_PREFIX
 TARGET = SUB_TARGET
 CAN_DRIVER = SUB_CAN_DRIVER
 TIMERS_DRIVER = SUB_TIMERS_DRIVER
-TESTMASTERMICROMOD = TestMasterMicroMod
 INCLUDES = -I../../include -I../../include/$(TARGET) -I../../include/$(CAN_DRIVER) -I../../include/$(TIMERS_DRIVER)
 ENABLE_SHARED = SUB_ENABLE_SHARED
+TARGET_DIR=../../bin/
+TESTMASTERMICROMOD = $(TARGET_DIR)TestMasterMicroMod
 
 MASTER_OBJS = TestMaster.o TestMasterMicroMod.o
 
 ifeq ($(ENABLE_SHARED),1)
 OBJS = $(MASTER_OBJS)
 else
-OBJS = $(MASTER_OBJS) ../../src/libcanfestival.a ../../drivers/$(TARGET)/libcanfestival_$(TARGET).a
+OBJS = $(MASTER_OBJS) $(TARGET_DIR)libcanfestival.a ../../drivers/$(TARGET)/libcanfestival_$(TARGET).a
 endif
 
 ifeq ($(TARGET),win32)
-	TESTMASTERMICROMOD = TestMasterMicroMod.exe
+	TESTMASTERMICROMOD = $(TARGET_DIR)TestMasterMicroMod.exe
 endif
 
 ifeq ($(TIMERS_DRIVER),timers_win32)

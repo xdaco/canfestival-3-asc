@@ -21,56 +21,22 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 # 
 
-OUT_DIR = bin
+CAN_DRIVER = can_vscom
+VSCAN_API_FILENAME=VSCAN_API_latest.zip
+PRE_COMPILE_TARGETS = VSCAN/vs_can_api.h
+DRIVER_INCLUDE = -I./VSCAN
+driverCleanup=yes
+include ../commonDriver
 
-all: directories objdictedit canfestival examples
+VSCAN/vs_can_api.h:
+	wget http://www.vscom.de/download/multiio/linux/driver/${VSCAN_API_FILENAME}
+	@if which unzip &> /dev/null; then \
+	unzip -o ${VSCAN_API_FILENAME} -d VSCAN; \
+	else \
+	echo "No unzip found. Please decompress ${VSCAN_API_FILENAME} manually"; \
+	exit 1; \
+	fi;
 
-examples: canfestival driver
-	$(MAKE) -C examples all
-
-documentation:
-	$(MAKE) -C doc/doxygen
-
-manual:
-	$(MAKE) -C doc/manual
-
-objdictedit:
-	$(MAKE) -C objdictgen all
-
-canfestival: driver
-	$(MAKE) -C src $@
-
-driver:
-	$(MAKE) -C drivers $@
-
-install: canfestival driver
-	$(MAKE) -C drivers $@
-	$(MAKE) -C src $@
-	$(MAKE) -C examples $@
-	$(MAKE) -C objdictgen $@
-	ldconfig
-
-uninstall:
-	$(MAKE) -C drivers $@
-	$(MAKE) -C src $@
-	$(MAKE) -C examples $@
-	$(MAKE) -C objdictgen $@
-
-clean:
-	$(MAKE) -C src $@
-	$(MAKE) -C drivers $@
-	$(MAKE) -C examples $@
-	$(MAKE) -C objdictgen $@
-	
-mrproper: clean
-	$(MAKE) -C src $@
-	$(MAKE) -C drivers $@
-	$(MAKE) -C examples $@
-	$(MAKE) -C objdictgen $@
-
-directories: ${OUT_DIR}
-
-.PHONY: ${OUT_DIR}
-
-${OUT_DIR}:
-	mkdir -p ${OUT_DIR}
+driverCleanup:
+	rm -f ${VSCAN_API_FILENAME}
+	rm -f -r VSCAN
