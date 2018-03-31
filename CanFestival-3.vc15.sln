@@ -6,7 +6,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CanFestival-3", "CanFestiva
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "can_ixxat_win32", "drivers\can_ixxat_win32\can_ixxat_win32.vc15.vcxproj", "{8F57E7FF-1B73-4134-A2B2-9C0EADB2AEFB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestMasterMicroMod", "examples\DS401_Master\DS401_Master.vc15.vcxproj", "{B51A176D-5320-4534-913B-3025CED5B27E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DS401_Master", "examples\DS401_Master\DS401_Master.vc15.vcxproj", "{B51A176D-5320-4534-913B-3025CED5B27E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CANOpenShell", "examples\CANOpenShell\CANOpenShell.vc15.vcxproj", "{06B3C378-9EE4-4C56-A519-775FF499DAB5}"
 EndProject
